@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guia, builds, ranking, vídeos e informações da guild KILLERSBR.BRASIL no MU Rufian.">
+  <meta name="theme-color" content="#02070d">
+  <title>KILLERSBR.BRASIL | MU Rufian</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#home" data-page-link="home">
+        <div class="brand-emblem">KB</div>
+        <div class="logo-wordmark">
+          <strong>KILLERSBR.<span>BRASIL</span></strong>
+          <small>MU Rufian</small>
+        </div>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+
+      <nav class="nav-links" id="navLinks">
+        <button class="nav-link active" data-page-link="home">Home</button>
+        <button class="nav-link" data-page-link="guia">Guia</button>
+        <button class="nav-link" data-page-link="builds">Builds e informações</button>
+        <button class="nav-link" data-page-link="ranking">Ranking</button>
+        <button class="nav-link" data-page-link="galeria">Galeria</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page active" id="home">
+      <div class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <div class="eyebrow">Guild brasileira • MU Rufian</div>
+            <h1>Domine o jogo com a <span>KILLERSBR.BRASIL</span></h1>
+            <p class="hero-description">
+              Guias para novatos e veteranos, builds, ranking da guild, vídeos,
+              eventos e tudo o que você precisa para evoluir no servidor.
+            </p>
+
+            <div class="hero-actions">
+              <button class="btn btn-primary" data-page-link="guia">Abrir guia completo</button>
+              <button class="btn" data-page-link="ranking">Ver ranking</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Central da guild</div>
+            <h2>Tudo organizado em um só lugar</h2>
+            <p>
+              A home apresenta o conteúdo principal sem jogar o passo a passo inteiro na tela.
+              Cada área possui uma página própria, mantendo o site mais limpo e fácil de navegar.
+            </p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="card feature-card" data-page-link="guia">
+              <div class="icon">01</div>
+              <h3>Guia completo</h3>
+              <p>Passo a passo em formato de sanfona para missão, evolução, build, dano real, CP e fashions.</p>
+            </article>
+
+            <article class="card feature-card" data-page-link="builds">
+              <div class="icon">02</div>
+              <h3>Builds e informações</h3>
+              <p>Área separada para explicar runas, gemas, elementos, penetração, acessórios e talentos.</p>
+            </article>
+
+            <article class="card feature-card" data-page-link="ranking">
+              <div class="icon">03</div>
+              <h3>Ranking manual</h3>
+              <p>Ranking pronto para você editar diretamente no JavaScript, sem precisar de banco de dados.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-sm">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Canal oficial</div>
+            <h2>Vídeo em destaque</h2>
+            <p>Os vídeos são carregados automaticamente do canal KILLERSBR.BRASIL. O primeiro vídeo aparece em destaque e os demais ficam no carrossel.</p>
+          </div>
+
+          <div class="video-showcase">
+            <article class="card featured-video">
+              <div class="featured-player" id="featuredPlayer"></div>
+              <div class="featured-meta">
+                <h3 id="featuredTitle">Carregando vídeos...</h3>
+                <p id="featuredDescription">Buscando os conteúdos mais recentes do canal.</p>
+              </div>
+            </article>
+
+            <aside class="card channel-card">
+              <div>
+                <span class="build-tag">YouTube</span>
+                <h3>KILLERSBR.BRASIL</h3>
+                <p>Castle Siege, Crywolf, Crystal Mine, PVP, eventos e guias da guild.</p>
+                <p class="api-status" id="apiStatus">Conectando ao canal...</p>
+              </div>
+              <a class="btn btn-primary" href="https://www.youtube.com/@KILLERSBR.BRASIL" target="_blank" rel="noopener">Abrir canal no YouTube</a>
+            </aside>
+          </div>
+
+          <div class="video-rail-wrap" style="margin-top:22px;">
+            <div class="video-rail" id="videoRail"></div>
+            <div class="carousel-controls">
+              <button class="carousel-btn" id="videosPrev" aria-label="Vídeos anteriores">←</button>
+              <button class="carousel-btn" id="videosNext" aria-label="Próximos vídeos">→</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Galeria</div>
+            <h2>Momentos da Killers BR</h2>
+            <p>Use esta área para guerras, bosses, eventos, conquistas e prints dos membros.</p>
+          </div>
+
+          <div class="gallery-grid">
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Guild</span><strong>Encontro da Killers BR</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Evento</span><strong>Roland War</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Boss</span><strong>World Boss Invasion</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>PVP</span><strong>Batalhas da guild</strong></div>
+            </article>
+          </div>
+
+          <div style="margin-top: 24px;">
+            <button class="btn" data-page-link="galeria">Abrir galeria completa</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="guia">
+      <div class="page-banner">
+        <div class="container page-banner-content">
+          <div class="eyebrow">Guia para novatos e veteranos</div>
+          <h1>Comece do jeito certo</h1>
+          <p>
+            Abra cada etapa da sanfona e siga o processo de evolução sem pular recursos importantes.
+          </p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container guide-layout">
+          <div class="accordion">
+
+            <article class="accordion-item open">
+              <button class="accordion-button">
+                <span class="step-number">01</span>
+                <span class="accordion-title">
+                  <strong>Conclua as missões</strong>
+                  <small>Equipamentos, Fragmentos 2025, Wings Fashion e Box 2025.</small>
+                </span>
+                <span class="chevron">⌄</span>
+              </button>
+
+              <div class="accordion-content">
+                <div class="accordion-inner">
+                  <div class="guide-content">
+                    <p>
+                      Todo jogador começa com as mesmas dúvidas: onde conseguir os itens,
+                      como evoluir o personagem e o que fazer primeiro. O ponto inicial é concluir as missões.
+                    </p>
+
+                    <h4>Recompensas das missões</h4>
+                    <ul>
+                      <li>Fragmentos 2025;</li>
+                      <li>Equipamentos;</li>
+                      <li>Wings Fashion;</li>
+                      <li>Box 2025.</li>
+                    </ul>
+
+                    <h4>Equipamentos iniciais</h4>
+                    <ul>
+                      <li><strong>Sword, Staff e Arco:</strong> Tier 70;</li>
+                      <li><strong>Armaduras, Shield, Anéis e Colar:</strong> Tier 35.</li>
+                    </ul>
+                    <p>Continue concluindo as missões até completar todo o conjunto.</p>
+
+                    <h4>Fragmentos 2025</h4>
+                    <p>São utilizados para:</p>
+                    <ul>
+                      <li>Evoluir os equipamentos do personagem;</li>
+                      <li>Evoluir a montaria;</li>
+                      <li>Criar Box Fashion;</li>
+                      <li>Criar Box Fashion Rare.</li>
+                    </ul>
+                    <p>Você consegue Fragmentos 2025 nas missões e derrotando o Boss do mapa Crystal Mine.</p>
+
+                    <h4>Como evoluir os equipamentos</h4>
+                    <div class="path">Forja → Ascender</div>
+                    <p>Utilize os Fragmentos 2025 para aumentar o dano e a defesa dos equipamentos.</p>
+
+                    <div class="tip">
+                      Mantenha todos os equipamentos na mesma Tier. Isso ativa bônus extras
+                      e melhora bastante o desempenho do personagem.
+                    </div>
+
+                    <h4>Como criar Box Fashion</h4>
+                    <div class="path">Fusão → Fashion</div>
+                    <p>Nessa área você poderá fabricar Box Fashion e Box Fashion Rare.</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="accordion-item">
+              <button class="accordion-button">
+                <span class="step-number">02</span>
+                <span class="accordion-title">
+                  <strong>Evolua os ícones</strong>
+                  <small>Conquista, Rank Militar, Éter, Pet, Alma Estelar, Mount e Desperta.</small>
+                </span>
+                <span class="chevron">⌄</span>
+              </button>
+
+              <div class="accordion-content">
+                <div class="accordion-inner">
+                  <div class="guide-content">
+                    <h4>Itens de evolução</h4>
+                    <ul>
+                      <li><strong>Conquista:</strong> Superior Achievement;</li>
+                      <li><strong>Rank Militar:</strong> Superior Fame;</li>
+                      <li><strong>Buff de Éter/Pet:</strong> Powder;</li>
+                      <li><strong>Alma Estelar:</strong> Star Essence;</li>
+                      <li><strong>God of Guardian:</strong> Hallow Essence;</li>
+                      <li><strong>Pet:</strong> Spirit Gem. Os pets recebidos no jogo já vêm no level 999;</li>
+                      <li><strong>Mount:</strong> Spirit Crystals para level;</li>
+                      <li><strong>Aprimoramento da montaria:</strong> Stone Steps, Stone Intermediate, Stone Advanced e Stone Superior;</li>
+                      <li><strong>Desperta:</strong> The Dust of Consciousness.</li>
+                    </ul>
+
+                    <h4>Awakening</h4>
+                    <p>
+                      O item The Dust of Consciousness evolui a magia do Desperta e o Awakening.
+                      O Awakening aumenta o poder ofensivo do conjunto de equipamentos e melhora o desempenho no PVP.
+                    </p>
+
+                    <h4>Onde encontrar os materiais</h4>
+                    <div class="path">Mall → Diamond → Resources e Materiais</div>
+                    <br>
+                    <div class="path">Fusão → Awakening Essence</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="accordion-item">
+              <button class="accordion-button">
+                <span class="step-number">03</span>
+                <span class="accordion-title">
+                  <strong>Construa sua build</strong>
+                  <small>Fluorite Treasure, High-end Rune, Soul Treasure, Tarot e acessórios.</small>
+                </span>
+                <span class="chevron">⌄</span>
+              </button>
+
+              <div class="accordion-content">
+                <div class="accordion-inner">
+                  <div class="guide-content">
+                    <h4>Itens iniciais</h4>
+                    <div class="path">Mall → Diamond → Misc</div>
+                    <ul>
+                      <li>Fluorite Treasure;</li>
+                      <li>High-end Rune;</li>
+                      <li>Soul Treasure.</li>
+                    </ul>
+
+                    <h4>Fluorite Treasure Chest</h4>
+                    <p>
+                      Serve para o Inlay de Gema, criando dano elemental, resistência elemental
+                      e atributos básicos.
+                    </p>
+
+                    <h4>Soul Treasure Chest</h4>
+                    <p>
+                      É utilizado na Gema da Alma, dentro do ícone Fluorita. Possui dano de
+                      fogo, água, raio, terra e gelo, além de penetração que pode variar de 10% a 90%.
+                    </p>
+
+                    <h4>High-end Rune</h4>
+                    <p>
+                      Fornece dano mágico e físico, defesa mágica e física, penetração de
+                      Wind, Ice, Fire, Water, Earth e Lightning, além da chance de Deadly Hit.
+                    </p>
+
+                    <h4>Tarot, acessórios e talentos</h4>
+                    <ul>
+                      <li><strong>Tarot Card:</strong> Mall → Diamond → Resources;</li>
+                      <li><strong>Acessórios:</strong> Fusão → Accessories;</li>
+                      <li><strong>Talentos:</strong> utilize XP conquistada nas missões.</li>
+                    </ul>
+
+                    <div class="tip">
+                      Crie vários acessórios para aumentar as possibilidades de combinação e montar uma build mais completa.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="accordion-item">
+              <button class="accordion-button">
+                <span class="step-number">04</span>
+                <span class="accordion-title">
+                  <strong>Entenda dano real e CP</strong>
+                  <small>CP alto nem sempre significa mais dano ou vantagem no PVP.</small>
+                </span>
+                <span class="chevron">⌄</span>
+              </button>
+
+              <div class="accordion-content">
+                <div class="accordion-inner">
+                  <div class="guide-content">
+                    <h4>Dano real</h4>
+                    <p>
+                      O dano real aumenta conforme o level das fashions. Em determinados níveis,
+                      elas deixam de fornecer apenas HP e passam a conceder dano extra em porcentagem
+                      e ataque direto. A construção da build também influencia bastante.
+                    </p>
+
+                    <h4>CP</h4>
+                    <p>
+                      O CP cresce principalmente por causa do HP e das porcentagens fornecidas por fashions.
+                      Mega Mount, Mega Costume e Mega Weapon podem oferecer porcentagens muito altas de HP.
+                    </p>
+
+                    <div class="tip">
+                      Um jogador pode ter menos CP e ainda vencer porque possui uma build melhor,
+                      mais penetração, resistência e dano real.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="accordion-item">
+              <button class="accordion-button">
+                <span class="step-number">05</span>
+                <span class="accordion-title">
+                  <strong>Consiga novas fashions</strong>
+                  <small>Eventos, invasões, Fusão e farm no mapa Crystal Mine.</small>
+                </span>
+                <span class="chevron">⌄</span>
+              </button>
+
+              <div class="accordion-content">
+                <div class="accordion-inner">
+                  <div class="guide-content">
+                    <h4>Eventos que entregam Box Fashion</h4>
+                    <ul>
+                      <li>Blood Castle;</li>
+                      <li>Devil Square;</li>
+                      <li>Lovers Arena;</li>
+                      <li>Angel Palace;</li>
+                      <li>War Camp;</li>
+                      <li>King of PK;</li>
+                      <li>Roland War.</li>
+                    </ul>
+
+                    <h4>Invasões e bosses</h4>
+                    <ul>
+                      <li>Invasion of Boss Anubis;</li>
+                      <li>World Boss Invasion X2;</li>
+                      <li>Chefe Mundial;</li>
+                      <li>Golden Boss;</li>
+                      <li>Boss Rift;</li>
+                      <li>Coliseu.</li>
+                    </ul>
+
+                    <h4>Horários importantes</h4>
+                    <ul>
+                      <li>Devil Square e Blood Castle: a cada 30 minutos;</li>
+                      <li>Boss Mundial e Golden Boss: a cada 15 minutos.</li>
+                    </ul>
+
+                    <h4>Criação por Fusão</h4>
+                    <div class="path">Fusão → Fashion</div>
+                    <p>
+                      Nessa área existem Box Fashion Mega, Definitive, Rare e várias outras.
+                    </p>
+
+                    <h4>Farm de Fragment Box</h4>
+                    <p>
+                      O item [2025] Fragment Box pode ser farmado no mapa Crystal Mine.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <aside class="sidebar">
+            <div class="card sidebar-card">
+              <h3>Ordem recomendada</h3>
+              <ul>
+                <li>Complete as missões;</li>
+                <li>Equipe o conjunto inicial;</li>
+                <li>Iguale as Tiers;</li>
+                <li>Evolua os ícones;</li>
+                <li>Monte sua build;</li>
+                <li>Foque em dano real.</li>
+              </ul>
+            </div>
+
+            <div class="card sidebar-card">
+              <h3>Dica da guild</h3>
+              <p>
+                Não gaste todos os recursos em um único item no começo.
+                Evolua o conjunto de forma equilibrada para aproveitar os bônus de Tier.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="builds">
+      <div class="page-banner">
+        <div class="container page-banner-content">
+          <div class="eyebrow">Builds e informações</div>
+          <h1>Prepare seu personagem</h1>
+          <p>Uma base visual para você cadastrar builds por classe, função ou estilo de combate.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Modelos de build</div>
+            <h2>Escolha seu foco principal</h2>
+            <p>Estes cards são demonstrativos. Você pode trocar os nomes, prioridades e textos no próprio HTML.</p>
+          </div>
+
+          <div class="build-grid">
+            <article class="card build-card">
+              <span class="build-tag">PVP ofensivo</span>
+              <h3>Build de penetração</h3>
+              <p>Foco em dano real, penetração elemental, Deadly Hit e redução das resistências do adversário.</p>
+              <div class="stat-list">
+                <div class="stat"><span>Prioridade</span><strong>Penetração</strong></div>
+                <div class="stat"><span>Elemento</span><strong>Fire / Lightning</strong></div>
+                <div class="stat"><span>Complemento</span><strong>Deadly Hit</strong></div>
+              </div>
+            </article>
+
+            <article class="card build-card">
+              <span class="build-tag">PVP resistente</span>
+              <h3>Build de defesa</h3>
+              <p>Equilibra defesa mágica, defesa física, resistência elemental e HP para suportar mais dano.</p>
+              <div class="stat-list">
+                <div class="stat"><span>Prioridade</span><strong>Resistência</strong></div>
+                <div class="stat"><span>Elemento</span><strong>Ice / Earth</strong></div>
+                <div class="stat"><span>Complemento</span><strong>HP e defesa</strong></div>
+              </div>
+            </article>
+
+            <article class="card build-card">
+              <span class="build-tag">PVE e Boss</span>
+              <h3>Build de dano contínuo</h3>
+              <p>Boa opção para farm, Crystal Mine, eventos e bosses, priorizando estabilidade de dano.</p>
+              <div class="stat-list">
+                <div class="stat"><span>Prioridade</span><strong>Dano base</strong></div>
+                <div class="stat"><span>Elemento</span><strong>Water / Wind</strong></div>
+                <div class="stat"><span>Complemento</span><strong>Magic / Physical</strong></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="empty-note">
+            Área preparada para adicionar novas builds por classe, prints dos equipamentos e combinações recomendadas.
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="ranking">
+      <div class="page-banner">
+        <div class="container page-banner-content">
+          <div class="eyebrow">Ranking da guild</div>
+          <h1>Os destaques da Killers BR</h1>
+          <p>O ranking abaixo é preenchido manualmente no JavaScript, sem banco de dados.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container">
+          <div class="card ranking-wrap">
+            <div class="ranking-head">
+              <div>
+                <h2 style="font-size: 1.45rem;">Ranking geral</h2>
+                <p>Atualize os jogadores no array <strong>rankingPlayers</strong>.</p>
+              </div>
+              <span class="build-tag" style="margin:0;">Atualização manual</span>
+            </div>
+
+            <table class="ranking-table">
+              <thead>
+                <tr>
+                  <th>Posição</th>
+                  <th>Jogador</th>
+                  <th>Classe</th>
+                  <th>CP</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rankingBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="galeria">
+      <div class="page-banner">
+        <div class="container page-banner-content">
+          <div class="eyebrow">Galeria da guild</div>
+          <h1>Nossas batalhas e conquistas</h1>
+          <p>Troque as imagens de fundo pelos prints reais dos membros e eventos da guild.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container">
+          <div class="gallery-grid gallery-large">
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Destaque</span><strong>Guild reunida para Roland War</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Boss</span><strong>Crystal Mine</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>PVP</span><strong>Vitória em equipe</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Evento</span><strong>Blood Castle</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Conquista</span><strong>Ranking da semana</strong></div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-caption"><span>Guild</span><strong>Print dos membros</strong></div>
+            </article>
+          </div>
+
+          <div class="empty-note">
+            Para usar fotos reais, procure por <strong>gallery-item</strong> no CSS e troque o background por:
+            <code>url("sua-imagem.jpg") center / cover</code>.
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="currentYear"></span> KILLERSBR.BRASIL • MU Rufian. Site da guild.
+    </div>
+  </footer>
+
+    <script src="assets/js/config.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
