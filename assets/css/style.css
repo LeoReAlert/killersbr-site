@@ -96,19 +96,24 @@
     }
 
     .brand-emblem {
-      width: 46px;
-      height: 46px;
+      width: 42px;
+      height: 42px;
       display: grid;
       place-items: center;
       border: 1px solid var(--line-strong);
       border-radius: 14px;
-      color: var(--primary);
-      font-weight: 900;
-      letter-spacing: -.08em;
       background:
         linear-gradient(145deg, rgba(61,199,255,.18), rgba(23,123,201,.03)),
         #06111b;
       box-shadow: inset 0 0 22px rgba(61,199,255,.12), 0 0 26px rgba(61,199,255,.10);
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .brand-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .brand-text strong {
@@ -222,12 +227,12 @@
 
     .hero-art {
       position: absolute;
-      right: -40px;
-      bottom: -40px;
+      right: -12px;
+      bottom: -24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: min(54vw, 760px);
+      width: min(26vw, 320px);
       pointer-events: none;
       z-index: 1;
     }
@@ -969,10 +974,10 @@
       }
 
       .hero-art {
-        right: -100px;
-        bottom: -20px;
-        width: min(82vw, 520px);
-        opacity: .42;
+        right: -48px;
+        bottom: -14px;
+        width: min(40vw, 220px);
+        opacity: .38;
       }
 
       .hero-art img {
