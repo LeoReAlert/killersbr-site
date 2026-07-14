@@ -1,13 +1,10 @@
-const OWNER = 'LeoReAlert';
-const REPO = 'killersbr-site';
-const BRANCH = 'main';
-const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`;
 const ADMIN_EMAIL = 'killersbr.brasil@killers.com.br';
 const ADMIN_PASSWORD = 'killersBr@2026';
-
-const state = {
-  token: sessionStorage.getItem('killersbr_admin_token') || '',
-  files: {}
+const DRAFT_KEYS = {
+  ranking: 'killersbr_draft_ranking',
+  guide: 'killersbr_draft_guide',
+  youtube: 'killersbr_draft_youtube_api_key',
+  html: 'killersbr_draft_html'
 };
 
 const loginPanel = document.getElementById('loginPanel');
@@ -15,8 +12,6 @@ const adminArea = document.getElementById('adminArea');
 const loginForm = document.getElementById('loginForm');
 const emailInput = document.getElementById('emailInput');
 const passwordInput = document.getElementById('passwordInput');
-const tokenInput = document.getElementById('tokenInput');
-const saveTokenButton = document.getElementById('saveTokenButton');
 const logoutButton = document.getElementById('logoutButton');
 const statusBox = document.getElementById('statusBox');
 const rankingBody = document.getElementById('rankingEditorBody');
@@ -36,26 +31,6 @@ function showStatus(message, type = 'success') {
 function setLoggedIn(loggedIn) {
   loginPanel.classList.toggle('is-hidden', loggedIn);
   adminArea.classList.toggle('is-hidden', !loggedIn);
-}
-
-function setPublishToken(token) {
-  state.token = token.trim();
-
-  if (state.token) {
-    sessionStorage.setItem('killersbr_admin_token', state.token);
-    tokenInput.value = state.token;
-  } else {
-    sessionStorage.removeItem('killersbr_admin_token');
-    tokenInput.value = '';
-  }
-}
-
-function encodeBase64(text) {
-  return btoa(unescape(encodeURIComponent(text)));
-}
-
-function decodeBase64(text) {
-  return decodeURIComponent(escape(atob(text.replace(/\n/g, ''))));
 }
 
 function extractBlock(content, startMarker, endMarker) {
@@ -81,54 +56,17 @@ function replaceBlock(content, startMarker, endMarker, body) {
   return content.replace(pattern, (_, start, __, end) => `${start}${body.trim()}${end}`);
 }
 
-async function githubRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${state.token}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      ...(options.headers || {})
-    }
-  });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Falha ao comunicar com o GitHub.');
+function readLocalJSON(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (error) {
+    return fallback;
   }
-
-  return data;
 }
 
-async function loadFile(path) {
-  const data = await githubRequest(`/contents/${path}?ref=${BRANCH}`);
-  const file = {
-    sha: data.sha,
-    content: decodeBase64(data.content || '')
-  };
-
-  state.files[path] = file;
-  return file;
-}
-
-async function saveFile(path, content, message) {
-  const current = state.files[path] || await loadFile(path);
-
-  const data = await githubRequest(`/contents/${path}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      message,
-      content: encodeBase64(content),
-      sha: current.sha,
-      branch: BRANCH
-    })
-  });
-
-  state.files[path] = {
-    sha: data.content.sha,
-    content
-  };
+function writeLocalValue(key, value) {
+  localStorage.setItem(key, value);
 }
 
 function extractRanking(appJs) {
@@ -180,80 +118,56 @@ function readRankingEditor() {
 }
 
 async function loadRanking() {
-  showStatus('Carregando ranking...', 'success');
-  const file = await loadFile('assets/js/app.js');
-  renderRankingEditor(extractRanking(file.content));
+  const file = await fetch('assets/js/app.js');
+  const content = await file.text();
+  renderRankingEditor(readLocalJSON(DRAFT_KEYS.ranking, extractRanking(content)));
   showStatus('Ranking carregado.');
 }
 
 async function saveRanking() {
-  const file = state.files['assets/js/app.js'] || await loadFile('assets/js/app.js');
   const players = readRankingEditor();
-  const updatedContent = file.content.replace(/const rankingPlayers = \[[\s\S]*?\];/, formatRanking(players));
-
-  await saveFile('assets/js/app.js', updatedContent, 'Update ranking from admin panel');
+  writeLocalValue(DRAFT_KEYS.ranking, JSON.stringify(players));
   renderRankingEditor(players);
-  showStatus('Ranking salvo no GitHub. O Pages atualiza em alguns minutos.');
+  showStatus('Ranking salvo neste navegador.');
 }
 
 async function loadGuide() {
-  showStatus('Carregando guias...', 'success');
-  const file = await loadFile('index.html');
-  guideEditor.value = extractBlock(file.content, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
-  htmlEditor.value = file.content;
+  const response = await fetch('index.html');
+  const content = await response.text();
+  guideEditor.value = localStorage.getItem(DRAFT_KEYS.guide) || extractBlock(content, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
+  htmlEditor.value = localStorage.getItem(DRAFT_KEYS.html) || content;
   showStatus('Guias carregados.');
 }
 
 async function saveGuide() {
-  const file = state.files['index.html'] || await loadFile('index.html');
-  const updatedContent = replaceBlock(
-    file.content,
-    'GUIDE_EDITOR_START',
-    'GUIDE_EDITOR_END',
-    guideEditor.value
-  );
-
-  await saveFile('index.html', updatedContent, 'Update guide content from admin panel');
-  htmlEditor.value = updatedContent;
-  showStatus('Guias salvos no GitHub. O Pages atualiza em alguns minutos.');
+  writeLocalValue(DRAFT_KEYS.guide, guideEditor.value.trim());
+  showStatus('Guias salvos neste navegador.');
 }
 
 async function loadYoutube() {
-  showStatus('Carregando chave do YouTube...', 'success');
-  const file = await loadFile('assets/js/config.js');
-  const match = file.content.match(/youtubeApiKey:\s*(['"])([\s\S]*?)\1/);
-
-  if (!match) {
-    throw new Error('Nao encontrei youtubeApiKey em assets/js/config.js.');
-  }
-
-  youtubeApiKeyInput.value = match[2];
+  const response = await fetch('assets/js/config.js');
+  const content = await response.text();
+  const match = content.match(/youtubeApiKey:\s*(['"])([\s\S]*?)\1/);
+  youtubeApiKeyInput.value = localStorage.getItem(DRAFT_KEYS.youtube) || (match ? match[2] : '');
   showStatus('Chave do YouTube carregada.');
 }
 
 async function saveYoutube() {
-  const file = state.files['assets/js/config.js'] || await loadFile('assets/js/config.js');
-  const updatedContent = file.content.replace(
-    /youtubeApiKey:\s*(['"])([\s\S]*?)\1/,
-    `youtubeApiKey: ${JSON.stringify(youtubeApiKeyInput.value.trim())}`
-  );
-
-  await saveFile('assets/js/config.js', updatedContent, 'Update YouTube API key from admin panel');
-  showStatus('Chave do YouTube salva no GitHub.');
+  writeLocalValue(DRAFT_KEYS.youtube, youtubeApiKeyInput.value.trim());
+  showStatus('Chave do YouTube salva neste navegador.');
 }
 
 async function loadHtml() {
-  showStatus('Carregando HTML bruto...', 'success');
-  const file = await loadFile('index.html');
-  htmlEditor.value = file.content;
-  guideEditor.value = extractBlock(file.content, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
+  const response = await fetch('index.html');
+  const content = await response.text();
+  htmlEditor.value = localStorage.getItem(DRAFT_KEYS.html) || content;
+  guideEditor.value = localStorage.getItem(DRAFT_KEYS.guide) || extractBlock(content, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
   showStatus('HTML bruto carregado.');
 }
 
 async function saveHtml() {
-  await saveFile('index.html', htmlEditor.value, 'Update site content from admin panel');
-  guideEditor.value = extractBlock(htmlEditor.value, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
-  showStatus('HTML bruto salvo no GitHub. O Pages atualiza em alguns minutos.');
+  writeLocalValue(DRAFT_KEYS.html, htmlEditor.value);
+  showStatus('HTML bruto salvo neste navegador.');
 }
 
 loginForm.addEventListener('submit', async event => {
@@ -273,48 +187,21 @@ loginForm.addEventListener('submit', async event => {
 
   setLoggedIn(true);
 
-  if (state.token) {
-    try {
-      await Promise.all([loadRanking(), loadGuide(), loadYoutube(), loadHtml()]);
-    } catch (error) {
-      showStatus(error.message, 'error');
-    }
-  } else {
-    showStatus('Entre a chave de publicacao para salvar no GitHub.', 'success');
+  try {
+    await Promise.all([loadRanking(), loadGuide(), loadYoutube(), loadHtml()]);
+  } catch (error) {
+    showStatus(error.message, 'error');
   }
 });
 
 logoutButton.addEventListener('click', () => {
-  sessionStorage.removeItem('killersbr_admin_token');
-  state.token = '';
   emailInput.value = '';
   passwordInput.value = '';
-  tokenInput.value = '';
   guideEditor.value = '';
   youtubeApiKeyInput.value = '';
   htmlEditor.value = '';
   setLoggedIn(false);
   showStatus('Voce saiu do painel.');
-});
-
-saveTokenButton.addEventListener('click', async () => {
-  const token = tokenInput.value.trim();
-
-  if (!token) {
-    showStatus('Cole a chave de publicacao primeiro.', 'error');
-    return;
-  }
-
-  setPublishToken(token);
-
-  try {
-    await githubRequest('');
-    showStatus('Chave salva e validada.', 'success');
-    await Promise.all([loadRanking(), loadGuide(), loadYoutube(), loadHtml()]);
-  } catch (error) {
-    setPublishToken('');
-    showStatus(error.message, 'error');
-  }
 });
 
 document.querySelectorAll('[data-admin-tab]').forEach(button => {
@@ -353,6 +240,6 @@ document.getElementById('saveYoutubeButton').addEventListener('click', () => sav
 document.getElementById('loadHtmlButton').addEventListener('click', () => loadHtml().catch(error => showStatus(error.message, 'error')));
 document.getElementById('saveHtmlButton').addEventListener('click', () => saveHtml().catch(error => showStatus(error.message, 'error')));
 
-if (state.token) {
-  tokenInput.value = state.token;
+if (localStorage.getItem(DRAFT_KEYS.ranking) || localStorage.getItem(DRAFT_KEYS.guide) || localStorage.getItem(DRAFT_KEYS.youtube) || localStorage.getItem(DRAFT_KEYS.html)) {
+  showStatus('Rascunhos locais encontrados neste navegador.');
 }

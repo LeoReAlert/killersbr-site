@@ -41,12 +41,32 @@ const pages = document.querySelectorAll('.page');
       });
     });
 
+    function readDraftJSON(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function applyGuideDraft() {
+      const draft = localStorage.getItem('killersbr_draft_guide');
+      const target = document.querySelector('#guia .guide-layout .accordion');
+
+      if (draft && target) {
+        target.outerHTML = draft;
+      }
+    }
+
+    applyGuideDraft();
+
     /*
       RANKING MANUAL
       Edite, adicione ou remova jogadores abaixo.
       O ranking respeita a ordem do array.
     */
-    const rankingPlayers = [
+    const defaultRankingPlayers = [
       { name: '-RAGN4R-', characterClass: 'MAGIC STR' },
       { name: '-BJORN-', characterClass: 'MAGIC WIZ' },
       { name: 'DOOKI.', characterClass: 'SUMMONER' },
@@ -65,6 +85,7 @@ const pages = document.querySelectorAll('.page');
       { name: 'FREYA.', characterClass: 'SUMMONER' },
       { name: 'GUIZAO.', characterClass: 'BLADE KNIGHT' }
     ];
+    const rankingPlayers = readDraftJSON('killersbr_draft_ranking', defaultRankingPlayers);
 
     function renderRanking() {
       const body = document.getElementById('rankingBody');
@@ -102,7 +123,7 @@ const pages = document.querySelectorAll('.page');
   
 
 const YOUTUBE_HANDLE = 'KILLERSBR.BRASIL';
-const YOUTUBE_API_KEY = window.KILLERSBR_CONFIG?.youtubeApiKey || '';
+const YOUTUBE_API_KEY = localStorage.getItem('killersbr_draft_youtube_api_key') || window.KILLERSBR_CONFIG?.youtubeApiKey || '';
 const fallbackVideos = [
   { id:'7j1tviRi8Rg', title:'TRICAMPEÃO DA CASTLE SIEGE.', description:'Conteúdo do canal KILLERSBR.BRASIL.' },
   { id:'IiOF79m86X4', title:'EP-4: CRYWOLF. CHOSEN VS KILLERSBR.', description:'Batalha da guild no evento Crywolf.' },
@@ -170,3 +191,13 @@ function renderVideoShowcase(videos) {
 document.getElementById('videosPrev')?.addEventListener('click', () => document.getElementById('videoRail').scrollBy({ left:-540, behavior:'smooth' }));
 document.getElementById('videosNext')?.addEventListener('click', () => document.getElementById('videoRail').scrollBy({ left:540, behavior:'smooth' }));
 loadYouTubeVideos();
+
+window.addEventListener('storage', event => {
+  if ([
+    'killersbr_draft_ranking',
+    'killersbr_draft_guide',
+    'killersbr_draft_youtube_api_key'
+  ].includes(event.key)) {
+    window.location.reload();
+  }
+});
