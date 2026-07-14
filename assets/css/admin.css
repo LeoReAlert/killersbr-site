@@ -145,6 +145,14 @@ textarea {
   font-size: .92rem;
 }
 
+#guideEditor {
+  min-height: 460px;
+}
+
+#htmlEditor {
+  min-height: 720px;
+}
+
 .hint {
   margin-top: 14px;
   font-size: .9rem;

@@ -20,6 +20,8 @@ const saveTokenButton = document.getElementById('saveTokenButton');
 const logoutButton = document.getElementById('logoutButton');
 const statusBox = document.getElementById('statusBox');
 const rankingBody = document.getElementById('rankingEditorBody');
+const guideEditor = document.getElementById('guideEditor');
+const youtubeApiKeyInput = document.getElementById('youtubeApiKeyInput');
 const htmlEditor = document.getElementById('htmlEditor');
 
 function showStatus(message, type = 'success') {
@@ -54,6 +56,29 @@ function encodeBase64(text) {
 
 function decodeBase64(text) {
   return decodeURIComponent(escape(atob(text.replace(/\n/g, ''))));
+}
+
+function extractBlock(content, startMarker, endMarker) {
+  const pattern = new RegExp(`(\\s*<!-- ${startMarker} -->\\n)([\\s\\S]*?)(\\n\\s*<!-- ${endMarker} -->)`);
+  const match = content.match(pattern);
+
+  if (!match) {
+    throw new Error(`Nao encontrei o bloco ${startMarker} em index.html.`);
+  }
+
+  return {
+    pattern,
+    body: match[2].trim()
+  };
+}
+
+function replaceBlock(content, startMarker, endMarker, body) {
+  const pattern = new RegExp(`(\\s*<!-- ${startMarker} -->\\n)([\\s\\S]*?)(\\n\\s*<!-- ${endMarker} -->)`);
+  if (!pattern.test(content)) {
+    throw new Error(`Nao encontrei o bloco ${startMarker} em index.html.`);
+  }
+
+  return content.replace(pattern, (_, start, __, end) => `${start}${body.trim()}${end}`);
 }
 
 async function githubRequest(path, options = {}) {
@@ -171,16 +196,64 @@ async function saveRanking() {
   showStatus('Ranking salvo no GitHub. O Pages atualiza em alguns minutos.');
 }
 
+async function loadGuide() {
+  showStatus('Carregando guias...', 'success');
+  const file = await loadFile('index.html');
+  guideEditor.value = extractBlock(file.content, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
+  htmlEditor.value = file.content;
+  showStatus('Guias carregados.');
+}
+
+async function saveGuide() {
+  const file = state.files['index.html'] || await loadFile('index.html');
+  const updatedContent = replaceBlock(
+    file.content,
+    'GUIDE_EDITOR_START',
+    'GUIDE_EDITOR_END',
+    guideEditor.value
+  );
+
+  await saveFile('index.html', updatedContent, 'Update guide content from admin panel');
+  htmlEditor.value = updatedContent;
+  showStatus('Guias salvos no GitHub. O Pages atualiza em alguns minutos.');
+}
+
+async function loadYoutube() {
+  showStatus('Carregando chave do YouTube...', 'success');
+  const file = await loadFile('assets/js/config.js');
+  const match = file.content.match(/youtubeApiKey:\s*(['"])([\s\S]*?)\1/);
+
+  if (!match) {
+    throw new Error('Nao encontrei youtubeApiKey em assets/js/config.js.');
+  }
+
+  youtubeApiKeyInput.value = match[2];
+  showStatus('Chave do YouTube carregada.');
+}
+
+async function saveYoutube() {
+  const file = state.files['assets/js/config.js'] || await loadFile('assets/js/config.js');
+  const updatedContent = file.content.replace(
+    /youtubeApiKey:\s*(['"])([\s\S]*?)\1/,
+    `youtubeApiKey: ${JSON.stringify(youtubeApiKeyInput.value.trim())}`
+  );
+
+  await saveFile('assets/js/config.js', updatedContent, 'Update YouTube API key from admin panel');
+  showStatus('Chave do YouTube salva no GitHub.');
+}
+
 async function loadHtml() {
-  showStatus('Carregando HTML...', 'success');
+  showStatus('Carregando HTML bruto...', 'success');
   const file = await loadFile('index.html');
   htmlEditor.value = file.content;
-  showStatus('HTML carregado.');
+  guideEditor.value = extractBlock(file.content, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
+  showStatus('HTML bruto carregado.');
 }
 
 async function saveHtml() {
   await saveFile('index.html', htmlEditor.value, 'Update site content from admin panel');
-  showStatus('HTML salvo no GitHub. O Pages atualiza em alguns minutos.');
+  guideEditor.value = extractBlock(htmlEditor.value, 'GUIDE_EDITOR_START', 'GUIDE_EDITOR_END').body;
+  showStatus('HTML bruto salvo no GitHub. O Pages atualiza em alguns minutos.');
 }
 
 loginForm.addEventListener('submit', async event => {
@@ -202,7 +275,7 @@ loginForm.addEventListener('submit', async event => {
 
   if (state.token) {
     try {
-      await Promise.all([loadRanking(), loadHtml()]);
+      await Promise.all([loadRanking(), loadGuide(), loadYoutube(), loadHtml()]);
     } catch (error) {
       showStatus(error.message, 'error');
     }
@@ -217,6 +290,9 @@ logoutButton.addEventListener('click', () => {
   emailInput.value = '';
   passwordInput.value = '';
   tokenInput.value = '';
+  guideEditor.value = '';
+  youtubeApiKeyInput.value = '';
+  htmlEditor.value = '';
   setLoggedIn(false);
   showStatus('Voce saiu do painel.');
 });
@@ -234,7 +310,7 @@ saveTokenButton.addEventListener('click', async () => {
   try {
     await githubRequest('');
     showStatus('Chave salva e validada.', 'success');
-    await Promise.all([loadRanking(), loadHtml()]);
+    await Promise.all([loadRanking(), loadGuide(), loadYoutube(), loadHtml()]);
   } catch (error) {
     setPublishToken('');
     showStatus(error.message, 'error');
@@ -270,6 +346,10 @@ document.getElementById('addRankingButton').addEventListener('click', () => {
 
 document.getElementById('loadRankingButton').addEventListener('click', () => loadRanking().catch(error => showStatus(error.message, 'error')));
 document.getElementById('saveRankingButton').addEventListener('click', () => saveRanking().catch(error => showStatus(error.message, 'error')));
+document.getElementById('loadGuideButton').addEventListener('click', () => loadGuide().catch(error => showStatus(error.message, 'error')));
+document.getElementById('saveGuideButton').addEventListener('click', () => saveGuide().catch(error => showStatus(error.message, 'error')));
+document.getElementById('loadYoutubeButton').addEventListener('click', () => loadYoutube().catch(error => showStatus(error.message, 'error')));
+document.getElementById('saveYoutubeButton').addEventListener('click', () => saveYoutube().catch(error => showStatus(error.message, 'error')));
 document.getElementById('loadHtmlButton').addEventListener('click', () => loadHtml().catch(error => showStatus(error.message, 'error')));
 document.getElementById('saveHtmlButton').addEventListener('click', () => saveHtml().catch(error => showStatus(error.message, 'error')));
 
