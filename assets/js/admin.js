@@ -2,8 +2,8 @@ const OWNER = 'LeoReAlert';
 const REPO = 'killersbr-site';
 const BRANCH = 'main';
 const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`;
-const ADMIN_EMAIL = 'leonardocriacaoweb2021@gmail.com';
-const ADMIN_PASSWORD = 'KILLERSBR2026';
+const ADMIN_EMAIL = 'killersbr.brasil@killers.com.br';
+const ADMIN_PASSWORD = 'killersBr@2026';
 
 const state = {
   token: sessionStorage.getItem('killersbr_admin_token') || '',
