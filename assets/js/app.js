@@ -1,4 +1,4 @@
-const pages = document.querySelectorAll('.page');
+    const pages = document.querySelectorAll('.page');
     const pageLinks = document.querySelectorAll('[data-page-link]');
     const navLinks = document.querySelectorAll('.nav-link');
     const navMenu = document.getElementById('navLinks');

@@ -228,11 +228,11 @@
     .hero-art {
       position: absolute;
       right: -12px;
-      bottom: -24px;
+      bottom: -18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: min(26vw, 320px);
+      width: min(20vw, 240px);
       pointer-events: none;
       z-index: 1;
     }
@@ -357,7 +357,8 @@
     .feature-grid,
     .video-grid,
     .gallery-grid,
-    .build-grid {
+    .build-grid,
+    .download-grid {
       display: grid;
       gap: 20px;
     }
@@ -376,6 +377,68 @@
 
     .build-grid {
       grid-template-columns: repeat(3, 1fr);
+    }
+
+    .download-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .download-card {
+      display: grid;
+      gap: 14px;
+      padding: 26px;
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -60px -80px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(61,199,255,.16), transparent 70%);
+      pointer-events: none;
+    }
+
+    .download-card h2 {
+      font-size: 1.8rem;
+      line-height: 1.05;
+    }
+
+    .download-card p {
+      max-width: 48ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .download-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .download-meta span {
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .download-v7 {
+      background:
+        linear-gradient(160deg, rgba(18, 66, 109, .28), rgba(7, 18, 29, .96)),
+        var(--panel);
+    }
+
+    .download-v20 {
+      background:
+        linear-gradient(160deg, rgba(145, 97, 8, .20), rgba(7, 18, 29, .96)),
+        var(--panel);
     }
 
     .card {
@@ -974,10 +1037,10 @@
       }
 
       .hero-art {
-        right: -48px;
-        bottom: -14px;
-        width: min(40vw, 220px);
-        opacity: .38;
+        right: -40px;
+        bottom: -10px;
+        width: min(30vw, 170px);
+        opacity: .34;
       }
 
       .hero-art img {
@@ -989,7 +1052,8 @@
       .gallery-grid,
       .gallery-large,
       .build-grid,
-      .sidebar {
+      .sidebar,
+      .download-grid {
         grid-template-columns: 1fr;
       }
 
