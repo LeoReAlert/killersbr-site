@@ -47,12 +47,23 @@ const pages = document.querySelectorAll('.page');
       O ranking respeita a ordem do array.
     */
     const rankingPlayers = [
-      { name: 'KillersMaster', characterClass: 'Dark Knight', cp: '25.8B', status: 'Online' },
-      { name: 'Oliveira', characterClass: 'Magic Gladiator', cp: '23.4B', status: 'Online' },
-      { name: 'Leonardo', characterClass: 'Dark Knight', cp: '21.9B', status: 'Online' },
-      { name: 'RufianBR', characterClass: 'Dark Wizard', cp: '18.7B', status: 'Offline' },
-      { name: 'WarriorX', characterClass: 'Elf', cp: '16.2B', status: 'Offline' },
-      { name: 'Anubis', characterClass: 'Summoner', cp: '14.5B', status: 'Online' }
+      { name: '-RAGN4R-', characterClass: 'MAGIC STR' },
+      { name: '-BJORN-', characterClass: 'MAGIC WIZ' },
+      { name: 'DOOKI.', characterClass: 'SUMMONER' },
+      { name: 'RAZVOK.', characterClass: 'MAGIC STR' },
+      { name: 'GHOSTZ.', characterClass: 'MAGIC STR' },
+      { name: 'GWYNETH.', characterClass: 'MAGIC STR' },
+      { name: 'QUEEN_YAMA.', characterClass: 'SUMMONER' },
+      { name: 'SUTAN.', characterClass: 'MAGIC STR' },
+      { name: 'CREATVSEST.', characterClass: 'MAGIC WIZ' },
+      { name: '-HOLLYWOOD-', characterClass: 'MAGIC STR' },
+      { name: 'NOBUDGET.', characterClass: 'BLADE KNIGHT' },
+      { name: 'BRUJA.', characterClass: 'ELF' },
+      { name: 'HUGOBAKER.', characterClass: 'MAGIC STR' },
+      { name: 'HUGOBAKER.', characterClass: 'MAGIC STR' },
+      { name: 'SAGAZ.', characterClass: 'DARK WIZARD' },
+      { name: 'FREYA.', characterClass: 'SUMMONER' },
+      { name: 'GUIZAO.', characterClass: 'BLADE KNIGHT' }
     ];
 
     function renderRanking() {
@@ -71,11 +82,9 @@ const pages = document.querySelectorAll('.page');
             </div>
           </td>
           <td>${player.characterClass}</td>
-          <td><strong>${player.cp}</strong></td>
+          <td><strong>KILLERSBR.BRASIL</strong></td>
           <td>
-            <span class="status" style="${player.status === 'Offline' ? 'color:#8fa9bb' : ''}">
-              ${player.status}
-            </span>
+            <span class="status">Guild</span>
           </td>
         </tr>
       `).join('');
