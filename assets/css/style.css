@@ -973,18 +973,24 @@
 .logo-wordmark small { margin-top:5px; color:var(--muted); font-size:.66rem; letter-spacing:.24em; text-transform:uppercase; }
 .video-showcase { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,.75fr); gap:22px; }
 .featured-video { overflow:hidden; }
+.featured-video.is-live { border-color: rgba(255, 98, 127, .55); box-shadow: 0 0 0 1px rgba(255, 98, 127, .22), var(--shadow); }
 .featured-player { aspect-ratio:16/9; background:#000; }
 .featured-player iframe { width:100%; height:100%; border:0; }
 .featured-meta { padding:22px; }
+.featured-meta h3 { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .featured-meta h3 { font-size:1.35rem; }
 .featured-meta p { color:var(--muted); margin-top:10px; line-height:1.6; }
 .video-rail-wrap { position:relative; }
 .video-rail { display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:thin; padding:2px 2px 12px; }
-.video-thumb { min-width:250px; max-width:250px; scroll-snap-align:start; cursor:pointer; overflow:hidden; transition:.2s ease; }
+.video-thumb { min-width:250px; max-width:250px; scroll-snap-align:start; cursor:pointer; overflow:hidden; transition:.2s ease; position:relative; }
 .video-thumb:hover { transform:translateY(-3px); border-color:var(--line-strong); }
 .video-thumb.active { border-color:var(--primary); box-shadow:0 0 0 1px rgba(61,199,255,.3), var(--shadow); }
 .video-thumb img { width:100%; aspect-ratio:16/9; object-fit:cover; background:#07111b; }
 .video-thumb .video-info { padding:14px; }
+.video-thumb .video-info p { margin-top:8px; font-size:.84rem; color:var(--muted); }
+.video-badge { display:inline-flex; align-items:center; justify-content:center; padding:5px 10px; border-radius:999px; background:rgba(61, 199, 255, .14); color:var(--primary); font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.video-badge-live { background:rgba(255, 98, 127, .16); color:#ff8ea2; }
+.video-thumb .video-badge { position:absolute; top:12px; left:12px; z-index:1; backdrop-filter:blur(6px); }
 .carousel-controls { display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
 .carousel-btn { width:42px; height:42px; border:1px solid var(--line); border-radius:12px; color:var(--text); background:var(--panel); cursor:pointer; }
 .channel-card { padding:24px; height:100%; display:flex; flex-direction:column; justify-content:space-between; }

@@ -139,48 +139,148 @@ function normalizeVideo(item) {
     id: snippet.resourceId?.videoId || item.id?.videoId || item.id,
     title: snippet.title || item.title || 'Vídeo KILLERSBR.BRASIL',
     description: snippet.description || item.description || '',
-    thumbnail: snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${snippet.resourceId?.videoId || item.id}/hqdefault.jpg`
+    thumbnail: snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${snippet.resourceId?.videoId || item.id}/hqdefault.jpg`,
+    publishedAt: snippet.publishedAt || item.publishedAt || '',
+    isLive: Boolean(snippet.liveBroadcastContent === 'live' || item.isLive),
+    url: `https://www.youtube.com/watch?v=${snippet.resourceId?.videoId || item.id?.videoId || item.id}`
   };
+}
+
+async function fetchJson(url, message) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+async function fetchChannelData() {
+  const channelData = await fetchJson(
+    `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&forHandle=${encodeURIComponent(YOUTUBE_HANDLE)}&key=${YOUTUBE_API_KEY}`,
+    'Falha ao localizar o canal'
+  );
+
+  const channel = channelData.items?.[0];
+  if (!channel) {
+    throw new Error('Canal do YouTube não encontrado');
+  }
+
+  return {
+    channelId: channel.id,
+    uploadsId: channel.contentDetails?.relatedPlaylists?.uploads
+  };
+}
+
+async function fetchAllPlaylistVideos(uploadsId) {
+  const items = [];
+  let nextPageToken = '';
+
+  do {
+    const params = new URLSearchParams({
+      part: 'snippet',
+      playlistId: uploadsId,
+      maxResults: '50',
+      key: YOUTUBE_API_KEY
+    });
+
+    if (nextPageToken) {
+      params.set('pageToken', nextPageToken);
+    }
+
+    const pageData = await fetchJson(
+      `https://www.googleapis.com/youtube/v3/playlistItems?${params.toString()}`,
+      'Falha ao carregar os vídeos'
+    );
+
+    items.push(...(pageData.items || []));
+    nextPageToken = pageData.nextPageToken || '';
+  } while (nextPageToken);
+
+  return items.map(normalizeVideo).filter(video => video.id && video.title !== 'Private video' && video.title !== 'Deleted video');
+}
+
+async function fetchLiveVideo(channelId) {
+  const params = new URLSearchParams({
+    part: 'snippet',
+    channelId,
+    eventType: 'live',
+    type: 'video',
+    maxResults: '1',
+    order: 'date',
+    key: YOUTUBE_API_KEY
+  });
+
+  const liveData = await fetchJson(
+    `https://www.googleapis.com/youtube/v3/search?${params.toString()}`,
+    'Falha ao verificar live'
+  );
+
+  const liveItem = liveData.items?.[0];
+  return liveItem ? normalizeVideo({ ...liveItem, isLive: true }) : null;
+}
+
+function dedupeVideos(videos) {
+  const seen = new Set();
+  return videos.filter(video => {
+    if (!video.id || seen.has(video.id)) return false;
+    seen.add(video.id);
+    return true;
+  });
 }
 
 async function loadYouTubeVideos() {
   const status = document.getElementById('apiStatus');
   try {
     if (!YOUTUBE_API_KEY) throw new Error('API_KEY_NOT_CONFIGURED');
-    const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=${encodeURIComponent(YOUTUBE_HANDLE)}&key=${YOUTUBE_API_KEY}`);
-    if (!channelResponse.ok) throw new Error('Falha ao localizar o canal');
-    const channelData = await channelResponse.json();
-    const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+    const { channelId, uploadsId } = await fetchChannelData();
     if (!uploadsId) throw new Error('Playlist de uploads não encontrada');
-    const videosResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=20&key=${YOUTUBE_API_KEY}`);
-    if (!videosResponse.ok) throw new Error('Falha ao carregar os vídeos');
-    const videosData = await videosResponse.json();
-    const videos = (videosData.items || []).map(normalizeVideo).filter(video => video.id && video.title !== 'Private video' && video.title !== 'Deleted video');
+
+    const [playlistVideos, liveVideo] = await Promise.all([
+      fetchAllPlaylistVideos(uploadsId),
+      fetchLiveVideo(channelId)
+    ]);
+
+    const videos = dedupeVideos(liveVideo ? [liveVideo, ...playlistVideos] : playlistVideos);
     if (!videos.length) throw new Error('Nenhum vídeo retornado');
-    status.textContent = 'Vídeos atualizados automaticamente pela API do YouTube.';
-    renderVideoShowcase(videos);
+
+    status.textContent = liveVideo
+      ? `Ao vivo agora no canal. ${playlistVideos.length} vídeos carregados da biblioteca.`
+      : `${playlistVideos.length} vídeos carregados automaticamente pela API do YouTube.`;
+    renderVideoShowcase(videos, { hasLive: Boolean(liveVideo) });
   } catch (error) {
     status.textContent = error.message === 'API_KEY_NOT_CONFIGURED'
       ? 'Exibindo vídeos de reserva. Configure a chave da API para atualização automática.'
       : 'A API não respondeu. Exibindo vídeos de reserva.';
-    renderVideoShowcase(fallbackVideos.map(normalizeVideo));
+    renderVideoShowcase(fallbackVideos.map(normalizeVideo), { hasLive: false });
   }
 }
 
-function renderVideoShowcase(videos) {
+function renderVideoShowcase(videos, options = {}) {
+  const { hasLive = false } = options;
   const rail = document.getElementById('videoRail');
   rail.innerHTML = videos.map((video, index) => `
     <article class="card video-thumb ${index === 0 ? 'active' : ''}" data-index="${index}">
+      ${video.isLive ? '<span class="video-badge video-badge-live">AO VIVO</span>' : ''}
       <img src="${video.thumbnail || `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}" alt="${video.title}" loading="lazy">
-      <div class="video-info"><h3>${video.title}</h3></div>
+      <div class="video-info">
+        <h3>${video.title}</h3>
+        <p>${video.isLive ? 'Transmissão em andamento' : 'Vídeo do canal oficial'}</p>
+      </div>
     </article>
   `).join('');
 
   function selectVideo(index) {
     const video = videos[index];
-    document.getElementById('featuredPlayer').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${video.id}" title="${video.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    const featuredBadge = document.getElementById('featuredBadge');
+    document.getElementById('featuredPlayer').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${video.id}${video.isLive ? '?autoplay=1' : ''}" title="${video.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     document.getElementById('featuredTitle').textContent = video.title;
     document.getElementById('featuredDescription').textContent = video.description || 'Assista a este conteúdo no canal oficial da guild.';
+    if (featuredBadge) {
+      featuredBadge.textContent = video.isLive ? 'AO VIVO' : hasLive ? 'BIBLIOTECA' : 'DESTAQUE';
+      featuredBadge.className = `video-badge${video.isLive ? ' video-badge-live' : ''}`;
+    }
+    document.querySelector('.featured-video')?.classList.toggle('is-live', video.isLive);
     document.querySelectorAll('.video-thumb').forEach((card, cardIndex) => card.classList.toggle('active', cardIndex === index));
   }
 
