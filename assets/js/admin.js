@@ -2,6 +2,8 @@ const OWNER = 'LeoReAlert';
 const REPO = 'killersbr-site';
 const BRANCH = 'main';
 const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`;
+const ADMIN_EMAIL = 'leonardocriacaoweb2021@gmail.com';
+const ADMIN_PASSWORD = 'KILLERSBR2026';
 
 const state = {
   token: sessionStorage.getItem('killersbr_admin_token') || '',
@@ -11,7 +13,10 @@ const state = {
 const loginPanel = document.getElementById('loginPanel');
 const adminArea = document.getElementById('adminArea');
 const loginForm = document.getElementById('loginForm');
+const emailInput = document.getElementById('emailInput');
+const passwordInput = document.getElementById('passwordInput');
 const tokenInput = document.getElementById('tokenInput');
+const saveTokenButton = document.getElementById('saveTokenButton');
 const logoutButton = document.getElementById('logoutButton');
 const statusBox = document.getElementById('statusBox');
 const rankingBody = document.getElementById('rankingEditorBody');
@@ -29,6 +34,18 @@ function showStatus(message, type = 'success') {
 function setLoggedIn(loggedIn) {
   loginPanel.classList.toggle('is-hidden', loggedIn);
   adminArea.classList.toggle('is-hidden', !loggedIn);
+}
+
+function setPublishToken(token) {
+  state.token = token.trim();
+
+  if (state.token) {
+    sessionStorage.setItem('killersbr_admin_token', state.token);
+    tokenInput.value = state.token;
+  } else {
+    sessionStorage.removeItem('killersbr_admin_token');
+    tokenInput.value = '';
+  }
 }
 
 function encodeBase64(text) {
@@ -168,33 +185,60 @@ async function saveHtml() {
 
 loginForm.addEventListener('submit', async event => {
   event.preventDefault();
-  const token = tokenInput.value.trim();
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
 
-  if (!token) {
-    showStatus('Informe o token do GitHub.', 'error');
+  if (!email || !password) {
+    showStatus('Informe email e senha.', 'error');
     return;
   }
 
-  state.token = token;
-  sessionStorage.setItem('killersbr_admin_token', token);
+  if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+    showStatus('Email ou senha incorretos.', 'error');
+    return;
+  }
 
-  try {
-    await githubRequest('');
-    setLoggedIn(true);
-    await Promise.all([loadRanking(), loadHtml()]);
-  } catch (error) {
-    sessionStorage.removeItem('killersbr_admin_token');
-    state.token = '';
-    showStatus(error.message, 'error');
+  setLoggedIn(true);
+
+  if (state.token) {
+    try {
+      await Promise.all([loadRanking(), loadHtml()]);
+    } catch (error) {
+      showStatus(error.message, 'error');
+    }
+  } else {
+    showStatus('Entre a chave de publicacao para salvar no GitHub.', 'success');
   }
 });
 
 logoutButton.addEventListener('click', () => {
   sessionStorage.removeItem('killersbr_admin_token');
   state.token = '';
+  emailInput.value = '';
+  passwordInput.value = '';
   tokenInput.value = '';
   setLoggedIn(false);
   showStatus('Voce saiu do painel.');
+});
+
+saveTokenButton.addEventListener('click', async () => {
+  const token = tokenInput.value.trim();
+
+  if (!token) {
+    showStatus('Cole a chave de publicacao primeiro.', 'error');
+    return;
+  }
+
+  setPublishToken(token);
+
+  try {
+    await githubRequest('');
+    showStatus('Chave salva e validada.', 'success');
+    await Promise.all([loadRanking(), loadHtml()]);
+  } catch (error) {
+    setPublishToken('');
+    showStatus(error.message, 'error');
+  }
 });
 
 document.querySelectorAll('[data-admin-tab]').forEach(button => {
@@ -230,9 +274,5 @@ document.getElementById('loadHtmlButton').addEventListener('click', () => loadHt
 document.getElementById('saveHtmlButton').addEventListener('click', () => saveHtml().catch(error => showStatus(error.message, 'error')));
 
 if (state.token) {
-  setLoggedIn(true);
-  Promise.all([loadRanking(), loadHtml()]).catch(error => {
-    setLoggedIn(false);
-    showStatus(error.message, 'error');
-  });
+  tokenInput.value = state.token;
 }

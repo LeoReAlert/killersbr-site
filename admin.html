@@ -20,15 +20,19 @@
 
     <section class="panel login-panel" id="loginPanel">
       <h2>Entrar</h2>
-      <p>Use um token do GitHub com permissao para editar o repositorio.</p>
+      <p>Use seu email e senha para abrir o painel.</p>
       <form id="loginForm" class="login-form">
         <label>
-          Token do GitHub
-          <input id="tokenInput" type="password" autocomplete="off" placeholder="ghp_...">
+          Email
+          <input id="emailInput" type="email" autocomplete="username" placeholder="voce@exemplo.com">
+        </label>
+        <label>
+          Senha
+          <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Sua senha">
         </label>
         <button type="submit">Entrar no painel</button>
       </form>
-      <p class="hint">O token fica apenas nesta aba do navegador e nao e salvo no codigo do site.</p>
+      <p class="hint">O acesso do painel e simples e local. O save real continua sendo feito no GitHub.</p>
     </section>
 
     <section class="admin-area is-hidden" id="adminArea">
@@ -37,7 +41,14 @@
           <strong>Repositorio</strong>
           <span>LeoReAlert/killersbr-site</span>
         </div>
-        <button type="button" class="secondary" id="logoutButton">Sair</button>
+        <div class="toolbar-actions">
+          <label class="token-field">
+            Chave de publicacao
+            <input id="tokenInput" type="password" autocomplete="off" placeholder="ghp_...">
+          </label>
+          <button type="button" class="secondary" id="saveTokenButton">Salvar chave</button>
+          <button type="button" class="secondary" id="logoutButton">Sair</button>
+        </div>
       </div>
 
       <div class="tabs" role="tablist" aria-label="Areas do painel">
