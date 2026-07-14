@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel Admin | KILLERSBR.BRASIL</title>
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="admin-hero">
+      <div>
+        <span class="eyebrow">Painel privado</span>
+        <h1>KILLERSBR.BRASIL</h1>
+        <p>Edite o ranking e o HTML do site. As alteracoes sao salvas como commit no GitHub.</p>
+      </div>
+      <a class="site-link" href="index.html">Ver site</a>
+    </section>
+
+    <section class="panel login-panel" id="loginPanel">
+      <h2>Entrar</h2>
+      <p>Use um token do GitHub com permissao para editar o repositorio.</p>
+      <form id="loginForm" class="login-form">
+        <label>
+          Token do GitHub
+          <input id="tokenInput" type="password" autocomplete="off" placeholder="ghp_...">
+        </label>
+        <button type="submit">Entrar no painel</button>
+      </form>
+      <p class="hint">O token fica apenas nesta aba do navegador e nao e salvo no codigo do site.</p>
+    </section>
+
+    <section class="admin-area is-hidden" id="adminArea">
+      <div class="toolbar">
+        <div>
+          <strong>Repositorio</strong>
+          <span>LeoReAlert/killersbr-site</span>
+        </div>
+        <button type="button" class="secondary" id="logoutButton">Sair</button>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Areas do painel">
+        <button type="button" class="tab active" data-admin-tab="ranking">Ranking</button>
+        <button type="button" class="tab" data-admin-tab="html">Conteudo HTML</button>
+      </div>
+
+      <section class="panel tab-panel active" id="rankingPanel">
+        <div class="panel-head">
+          <div>
+            <h2>Ranking</h2>
+            <p>Edite nome e classe. A ordem da tabela vira a ordem do ranking no site.</p>
+          </div>
+          <div class="actions">
+            <button type="button" class="secondary" id="loadRankingButton">Recarregar</button>
+            <button type="button" id="addRankingButton">Adicionar</button>
+            <button type="button" id="saveRankingButton">Salvar ranking</button>
+          </div>
+        </div>
+
+        <div class="ranking-editor">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Jogador</th>
+                <th>Classe</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rankingEditorBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel tab-panel" id="htmlPanel">
+        <div class="panel-head">
+          <div>
+            <h2>Conteudo HTML</h2>
+            <p>Editor simples para textos e secoes do arquivo principal.</p>
+          </div>
+          <div class="actions">
+            <button type="button" class="secondary" id="loadHtmlButton">Recarregar</button>
+            <button type="button" id="saveHtmlButton">Salvar HTML</button>
+          </div>
+        </div>
+        <textarea id="htmlEditor" spellcheck="false"></textarea>
+      </section>
+    </section>
+
+    <div class="toast" id="statusBox" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
